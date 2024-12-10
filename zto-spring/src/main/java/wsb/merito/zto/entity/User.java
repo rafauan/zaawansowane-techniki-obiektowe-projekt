@@ -47,4 +47,5 @@ public class User implements UserDetails {
         return email;
     }
 
+    public Long getId() { return id; }
 }
