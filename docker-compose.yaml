@@ -17,3 +17,17 @@ services:
             - zto-network
         container_name: zto-nuxt-container
         command: npm run dev
+    next:
+        build:
+            dockerfile: ./zto-docker/next.Dockerfile
+        ports:
+            - "3000:3000"
+        volumes:
+            - ./zto-next:/app
+            - /app/node_modules
+        environment:
+            - PORT=3000
+        networks:
+            - zto-network
+        container_name: zto-next-container
+        command: npm run dev
