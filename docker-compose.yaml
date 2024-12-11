@@ -4,6 +4,7 @@ networks:
 
 services:
     nuxt:
+        image: nuxt-image
         build:
             dockerfile: ./zto-docker/nuxt.Dockerfile
         ports:
@@ -18,6 +19,7 @@ services:
         container_name: zto-nuxt-container
         command: npm run dev
     next:
+        image: next-image
         build:
             dockerfile: ./zto-docker/next.Dockerfile
         ports:
@@ -31,3 +33,15 @@ services:
             - zto-network
         container_name: zto-next-container
         command: npm run dev
+    spring:
+        image: spring-image
+        build:
+            dockerfile: ./zto-docker/spring.Dockerfile
+        ports:
+            - "8080:8080"
+        networks:
+            - zto-network
+        container_name: zto-srping-container
+        command:  ./mvnw spring-boot:run
+        volumes:
+            - ./zto-spring/src:/app/src
