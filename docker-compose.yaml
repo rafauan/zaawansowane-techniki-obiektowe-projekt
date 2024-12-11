@@ -1,0 +1,19 @@
+networks:
+    zto-network:
+        driver: bridge
+
+services:
+    nuxt:
+        build:
+            dockerfile: ./zto-docker/nuxt.Dockerfile
+        ports:
+            - "3001:3001"
+        volumes:
+            - ./zto-nuxt:/app
+            - /app/node_modules
+        environment:
+            - NUXT_PORT=3001
+        networks:
+            - zto-network
+        container_name: zto-nuxt-container
+        command: npm run dev
