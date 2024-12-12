@@ -2,6 +2,9 @@ networks:
     zto-network:
         driver: bridge
 
+volumes:
+    vendor:
+
 services:
     nuxt:
         image: nuxt-image
@@ -45,3 +48,24 @@ services:
         command:  ./mvnw spring-boot:run
         volumes:
             - ./zto-spring/src:/app/src
+    laravel:
+        image: laravel-image
+        build:
+          context: ./zto-laravel
+          dockerfile: ../zto-docker/laravel.Dockerfile
+        ports:
+          - "8000:8000"
+        volumes:
+          - ./zto-laravel:/app
+          - vendor:/app/vendor
+        environment:
+          - APP_ENV=local
+          - APP_DEBUG=true
+          - APP_KEY=base64:VA9GEXHO15XHIs/cngvtggqWuX+MSjRdLR4gaiubCI0=
+          - DB_CONNECTION=sqlite
+          - DB_DATABASE=/app/database/database.sqlite
+          - SPRING_API_URL=http://zto-srping-container:8080
+        networks:
+          - zto-network
+        container_name: zto-laravel-container
+        command: php artisan serve --host=0.0.0.0 --port=8000
