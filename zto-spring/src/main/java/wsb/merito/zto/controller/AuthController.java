@@ -15,7 +15,9 @@ import wsb.merito.zto.service.AuthenticationService;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
     private final AuthenticationService authenticationService;
+
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody SignUpRequest request) {
         return ResponseEntity.ok(authenticationService.signup(request));
