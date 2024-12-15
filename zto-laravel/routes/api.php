@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MessageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -25,6 +26,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/friends/get_pending_friend_requests', [FriendController::class, 'get_pending_friend_requests']);
     Route::patch('/friends/manage_friend_request', [FriendController::class, 'manage_friend_request']);
     Route::get('/friends/get_friends', [FriendController::class, 'get_friends']);
+
+    // Wiadomości
+    Route::post('/messages', [MessageController::class, 'sendMessage']);
+    Route::get('/messages', [MessageController::class, 'getMessages']);
+    Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
+    Route::delete('/messages/{id}', [MessageController::class, 'deleteMessage']);
 });
 
 Route::post('/auth/signup', [AuthController::class, 'signup']);
