@@ -20,13 +20,13 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signUp(@RequestBody SignUpRequest request) {
-        String jwt = authenticationService.signup(request);
+        String jwt = authenticationService.signUp(request);
         return ResponseEntity.ok(new AuthResponse(jwt));
     }
 
     @PostMapping("/signin")
     public ResponseEntity<AuthResponse> signIn(@RequestBody SignInRequest request) {
-        String jwt = authenticationService.signin(request);
+        String jwt = authenticationService.signIn(request);
         return ResponseEntity.ok(new AuthResponse(jwt));
     }
 }
