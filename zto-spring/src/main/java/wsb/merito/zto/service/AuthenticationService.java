@@ -20,22 +20,20 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public String signup(SignUpRequest request) {
+    public String signUp(SignUpRequest request) {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER).build();
         userService.save(user);
-        String jwt = jwtService.generateToken(user);
-        return jwt;
+        return jwtService.generateToken(user);
     }
 
-    public String signin(SignInRequest request) {
+    public String signIn(SignInRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         User user = userService.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
-        String jwt = jwtService.generateToken(user);
-        return jwt;
+        return jwtService.generateToken(user);
     }
 }
