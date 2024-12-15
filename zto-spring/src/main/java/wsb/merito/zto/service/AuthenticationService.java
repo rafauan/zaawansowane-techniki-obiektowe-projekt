@@ -21,8 +21,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public String signup(SignUpRequest request) {
-        User user = User.builder().firstName(request.getFirstName()).lastName(request.getLastName())
-                .email(request.getEmail()).password(passwordEncoder.encode(request.getPassword()))
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER).build();
         userService.save(user);
         String jwt = jwtService.generateToken(user);
