@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
+use App\Models\PostLike;
 
 class PostController extends Controller
 {
@@ -26,23 +27,24 @@ class PostController extends Controller
 
     public function create_post(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string',
-            'content' => 'required|string',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'content' => 'required|string|max:1000',
+                'title' => 'required|string|max:255',
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $validator->errors(),
-            ], 400);
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()->first()], 400);
+            }
+
+            $post = Post::create([
+                'user_id' => auth()->id(),
+                'content' => $request->content,
+                'title' => $request->title,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         }
-
-        $post = Post::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'user_id' => $request->user()->id,
-        ]);
 
         return response()->json([
             'message' => 'Post created successfully',
@@ -50,60 +52,85 @@ class PostController extends Controller
         ], 201);
     }
 
+    public function get_record($post_id)
+    {
+        try {
+            $post = Post::getRecord($post_id);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
+
+        return response()->json([
+            'message' => 'OK',
+            'post' => $post,
+        ]);
+    }
+
+    public function update_post(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'content' => 'required|string|max:1000',
+                'title' => 'required|string|max:255',
+                'post_id' => 'required|integer',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()->first()], 400);
+            }
+
+            $post = Post::updateRecord($request->post_id, $request->all());
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
+
+        return response()->json([
+            'message' => 'Post updated successfully',
+            'post' => $post,
+        ]);
+    }
+
     public function delete_post($post_id)
     {
-        if (!$post_id) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => ['post_id' => 'Post ID is required'],
-            ], 400);
+        try {
+            Post::deleteRecord($post_id);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         }
-
-        $post = Post::find($post_id);
-
-        if (!$post) {
-            return response()->json([
-                'message' => 'Post not found',
-            ], 404);
-        }
-
-        $post->delete();
 
         return response()->json([
             'message' => 'Post deleted successfully',
         ]);
     }
 
-    public function update_post(Request $request)
+    public function like_post($post_id)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'nullable|string',
-            'content' => 'nullable|string',
-            'post_id' => 'required|integer',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation error',
-                'errors' => $validator->errors(),
-            ], 400);
-        }
-
-        $post = Post::find($request->post_id);
+        $post = Post::find($post_id);
 
         if (!$post) {
-            return response()->json([
-                'message' => 'Post not found',
-            ], 404);
+            return response()->json(['message' => 'Post not found'], 404);
         }
 
-        $post->title = $request->title;
-        $post->content = $request->content;
-        $post->save();
+        $user_id = auth()->id();
+
+        // Sprawdzenie, czy użytkownik już polubił ten post
+        if ($post->isLikedByUser($user_id)) {
+            return response()->json(['message' => 'You have already liked this post'], 400);
+        }
+    
+        // Dodanie rekordu do tabeli post_likes
+        PostLike::create([
+            'post_id' => $post_id,
+            'user_id' => $user_id,
+        ]);
+
+        // Opcjonalnie zwiększ licznik polubień
+        $post->increment('likes');
+        $post->logAction('Post liked');
 
         return response()->json([
-            'message' => 'Post updated successfully',
-            'post' => $post,
+            'message' => 'Post liked successfully',
+            'likes' => $post->likes,
         ]);
     }
 }

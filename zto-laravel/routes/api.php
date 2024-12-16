@@ -7,11 +7,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FriendController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-
 Route::middleware('auth:sanctum')->group(function () {
 
     // Posty
@@ -19,6 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts/create_post', [PostController::class, 'create_post']);
     Route::delete('/posts/delete_post/{post_id}', [PostController::class, 'delete_post']);
     Route::patch('/posts/update_post', [PostController::class, 'update_post']);
+    Route::post('/posts/{post_id}/like', [PostController::class, 'like_post']);
 
     // Użytkownicy
     Route::get('/auth/signout', [AuthController::class, 'signout']);
@@ -26,6 +22,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/friends/get_pending_friend_requests', [FriendController::class, 'get_pending_friend_requests']);
     Route::patch('/friends/manage_friend_request', [FriendController::class, 'manage_friend_request']);
     Route::get('/friends/get_friends', [FriendController::class, 'get_friends']);
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
     // Wiadomości
     Route::post('/messages', [MessageController::class, 'sendMessage']);
