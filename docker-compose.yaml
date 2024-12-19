@@ -15,12 +15,13 @@ services:
         volumes:
             - ./zto-nuxt:/app
             - /app/node_modules
-        environment:
-            - NUXT_PORT=3001
         networks:
             - zto-network
+        environment:
+            - NUXT_PORT=3001
         container_name: zto-nuxt-container
         command: npm run dev
+
     next:
         image: next-image
         build:
@@ -30,42 +31,43 @@ services:
         volumes:
             - ./zto-next:/app
             - /app/node_modules
-        environment:
-            - PORT=3000
         networks:
             - zto-network
+        environment:
+            - PORT=3000
         container_name: zto-next-container
         command: npm run dev
+
     spring:
         image: spring-image
         build:
             dockerfile: ./zto-docker/spring.Dockerfile
         ports:
             - "8080:8080"
-        networks:
-            - zto-network
-        container_name: zto-srping-container
-        command:  ./mvnw spring-boot:run
         volumes:
             - ./zto-spring/src:/app/src
+        networks:
+            - zto-network
+        container_name: zto-spring-container
+        command: ./mvnw spring-boot:run
+
     laravel:
         image: laravel-image
         build:
-          context: ./zto-laravel
-          dockerfile: ../zto-docker/laravel.Dockerfile
+            dockerfile: ./zto-docker/laravel.Dockerfile
         ports:
-          - "8000:8000"
+            - "8000:8000"
         volumes:
-          - ./zto-laravel:/app
-          - vendor:/app/vendor
-        environment:
-          - APP_ENV=local
-          - APP_DEBUG=true
-          - APP_KEY=base64:VA9GEXHO15XHIs/cngvtggqWuX+MSjRdLR4gaiubCI0=
-          - DB_CONNECTION=sqlite
-          - DB_DATABASE=/app/database/database.sqlite
-          - SPRING_API_URL=http://zto-srping-container:8080
+            - ./zto-laravel:/app
+            - vendor:/app/vendor
         networks:
-          - zto-network
+            - zto-network
+        environment:
+            - APP_ENV=local
+            - APP_DEBUG=true
+            - APP_KEY=base64:VA9GEXHO15XHIs/cngvtggqWuX+MSjRdLR4gaiubCI0=
+            - DB_CONNECTION=sqlite
+            - DB_DATABASE=/app/database/database.sqlite
+            - SPRING_API_URL=http://zto-srping-container:8080
         container_name: zto-laravel-container
         command: php artisan serve --host=0.0.0.0 --port=8000

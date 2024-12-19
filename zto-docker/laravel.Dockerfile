@@ -1,3 +1,4 @@
+# Use the official PHP image
 FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -14,12 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Set the working directory inside the container
 WORKDIR /app
 
-COPY . /app
+COPY ./zto-laravel/ /app
 
 RUN composer install --no-interaction --optimize-autoloader
 
 RUN chmod -R 775 storage bootstrap/cache
-
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

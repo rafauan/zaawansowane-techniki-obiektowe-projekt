@@ -22,3 +22,8 @@ Logowanie, rejestracja, dodawanie posta, wiadomości, znajomi (CRUD)
 
 **Wymagania:**
 Konstruktory, klasy abstrakcyjne, dziedziczenie, interfejsy, zmienne klasowe, zmienne na metodach, typy danych, modyfikatory dostępu, parsowanie na json, wielodziedziczenie za pomocą interfejsów, DI w metodach.
+
+
+## Docker environment
+
+[Docker README.md](zto-docker/README.md)
