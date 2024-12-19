@@ -10,7 +10,7 @@ export default function Page() {
 
 	useEffect(() => {
 		getPosts().then((data) => {
-			setPosts(data);
+			if (data) setPosts(data);
 			setLoading(false);
 		});
 	}, []);
@@ -27,7 +27,7 @@ export default function Page() {
 		<div>
 			<h1 className='text-3xl font-bold underline'>Posts</h1>
 			<div>
-				{posts.map((el) => (
+				{posts?.map((el) => (
 					<p key={el.id}>{el.title}</p>
 				))}
 			</div>

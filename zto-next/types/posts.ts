@@ -21,4 +21,16 @@ type CreatePostPayload = {
 	content: string;
 };
 
-export type { Post, Posts, PostsResponse, CreatePostPayload };
+type UpdatePostPayload = {
+	title: string;
+	content: string;
+	postId: number;
+};
+
+export type {
+	Post,
+	Posts,
+	PostsResponse,
+	CreatePostPayload,
+	UpdatePostPayload,
+};
