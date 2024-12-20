@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -14,7 +13,14 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en'>
-			<body>{children}</body>
+			<body>
+				<header className='bg-blue-700 mb-6'>
+					<h1 className='text-3xl font-bold mb-8 text-white py-10 px-8'>
+						Facebook
+					</h1>
+				</header>
+				<main className='px-8'>{children}</main>
+			</body>
 		</html>
 	);
 }
