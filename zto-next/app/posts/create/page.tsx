@@ -17,7 +17,7 @@ const CreatePost = () => {
 
 	return (
 		<PostForm
-			pageTitle='Create post'
+			pageTitle='Utwórz post'
 			titleValue={title}
 			contentValue={content}
 			onChangeContent={setContent}

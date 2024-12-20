@@ -1,18 +1,18 @@
-# Run Docker Compose
+# Run ZTO project
 
-1. With build
-```
-docker compose -f docker-compose.yaml up --build -d
-```
+1. Run project using Docker Compose with build option
+   ```
+   docker compose -f docker-compose.yaml up --build -d
+   ```
 
-2. Without build
-```
-docker compose -f docker-compose.yaml up -d
-```
+2. Run project using Docker Compose without build option
+   ```
+   docker compose -f docker-compose.yaml up -d
+   ```
 
+# Stop ZTO project
 
-# Stop Docker Compose
-
-```
-docker compose -f docker-compose.yaml down
-```
+1. Stop project using Docker Compose
+   ```
+   docker compose -f docker-compose.yaml down
+   ```

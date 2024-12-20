@@ -46,7 +46,7 @@ const EditPost = () => {
 
 	return post ? (
 		<PostForm
-			pageTitle='Update post'
+			pageTitle='Edytuj post'
 			titleValue={post.title}
 			contentValue={post.content}
 			onChangeContent={(text) => setPost({ ...post, content: text })}
