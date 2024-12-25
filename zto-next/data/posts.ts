@@ -12,7 +12,7 @@ const headers = {
 	Origin: '',
 	Authorization:
 		//TODO: add token
-		'Bearer token',
+		`Bearer ${localStorage.getItem('token')}`,
 };
 
 export const createPost = async (payload: CreatePostPayload) => {
