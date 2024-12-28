@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import LogoutButton from '@/lib/logout';
 
 export const metadata: Metadata = {
 	title: 'Create Next App',
@@ -18,6 +19,7 @@ export default function RootLayout({
 					<h1 className='text-3xl font-bold mb-8 text-white py-10 px-8'>
 						Facebook
 					</h1>
+					<LogoutButton></LogoutButton>
 				</header>
 				<main className='px-8'>{children}</main>
 			</body>
