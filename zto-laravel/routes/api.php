@@ -15,6 +15,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/posts/delete_post/{post_id}', [PostController::class, 'delete_post']);
     Route::patch('/posts/update_post', [PostController::class, 'update_post']);
     Route::post('/posts/{post_id}/like', [PostController::class, 'like_post']);
+    Route::post('/posts/{post_id}/unlike', [PostController::class, 'unlike_post']);
+    Route::post('/posts/{post_id}/toggle_pin', [PostController::class, 'toggle_post_pin']);
+    Route::get('/posts/get_friends_posts', [PostController::class, 'get_friends_posts']);
 
     // Użytkownicy
     Route::get('/auth/signout', [AuthController::class, 'signout']);
@@ -25,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::get('/friends/search', [FriendController::class, 'search_users']);
 
     // Wiadomości
     Route::post('/messages', [MessageController::class, 'sendMessage']);

@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\BaseModel;
+use App\Contracts\LikeableInterface;
+use App\Contracts\PinnableInterface;
 
-class Post extends BaseModel
+class Post extends BaseModel implements LikeableInterface, PinnableInterface
 {
     use HasFactory;
 
@@ -26,18 +29,6 @@ class Post extends BaseModel
     }
 
     /**
-     * Metoda do przypinania posta
-     */
-    public function pin()
-    {
-        if (!$this->is_pinned) {
-            $this->is_pinned = true;
-            $this->save();
-            $this->logAction('Post pinned');
-        }
-    }
-
-    /**
      * Relacja z modelem PostLike (polubienia posta)
      */
     public function likesRelation()
@@ -48,8 +39,70 @@ class Post extends BaseModel
     /**
      * Sprawdzenie, czy post jest polubiony przez użytkownika
      */
-    public function isLikedByUser($userId)
+    public function isLikedBy(int $userId): bool
     {
         return $this->likesRelation()->where('user_id', $userId)->exists();
+    }
+
+    /**
+     * Zarządzanie polubieniami: Dodanie polubienia
+     */
+    public function like(int $userId): bool
+    {
+        if ($this->isLikedBy($userId)) {
+            return false;
+        }
+
+        PostLike::create([
+            'post_id' => $this->id,
+            'user_id' => $userId,
+        ]);
+        $this->increment('likes');
+        return true;
+    }
+
+    /**
+     * Zarządzanie polubieniami: Usunięcie polubienia
+     */
+    public function unlike(int $userId): bool
+    {
+        $like = PostLike::where('post_id', $this->id)->where('user_id', $userId)->first();
+        if (!$like) {
+            return false;
+        }
+
+        $like->delete();
+        $this->decrement('likes');
+        return true;
+    }
+
+    /**
+     * Zarządzanie przypinaniem: Przypięcie posta
+     */
+    public function pin(): void
+    {
+        if (!$this->is_pinned) {
+            $this->is_pinned = true;
+            $this->save();
+        }
+    }
+
+    /**
+     * Zarządzanie przypinaniem: Odpięcie posta
+     */
+    public function unpin(): void
+    {
+        if ($this->is_pinned) {
+            $this->is_pinned = false;
+            $this->save();
+        }
+    }
+
+    /**
+     * Sprawdzenie, czy post jest przypięty
+     */
+    public function isPinned(): bool
+    {
+        return $this->is_pinned;
     }
 }

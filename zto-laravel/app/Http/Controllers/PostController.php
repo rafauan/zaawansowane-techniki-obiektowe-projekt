@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
-use App\Models\PostLike;
 
 class PostController extends Controller
 {
@@ -103,34 +102,92 @@ class PostController extends Controller
         ]);
     }
 
-    public function like_post($post_id)
+    public function like_post(int $post_id)
     {
-        $post = Post::find($post_id);
-
-        if (!$post) {
-            return response()->json(['message' => 'Post not found'], 404);
+        try {
+            $post = Post::getRecord($post_id);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         }
-
         $user_id = auth()->id();
 
-        // Sprawdzenie, czy użytkownik już polubił ten post
-        if ($post->isLikedByUser($user_id)) {
-            return response()->json(['message' => 'You have already liked this post'], 400);
+        if ($post->like($user_id)) {
+            return response()->json([
+                'message' => 'Post liked successfully',
+                'likes' => $post->likes,
+            ], 200);
         }
     
-        // Dodanie rekordu do tabeli post_likes
-        PostLike::create([
-            'post_id' => $post_id,
-            'user_id' => $user_id,
-        ]);
+        return response()->json([
+            'message' => 'You have already liked this post',
+        ], 400);
+    }
 
-        // Opcjonalnie zwiększ licznik polubień
-        $post->increment('likes');
-        $post->logAction('Post liked');
+    public function unlike_post(int $post_id)
+    {
+        try {
+            $post = Post::getRecord($post_id);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
+        $user_id = auth()->id();
+
+        if ($post->unlike($user_id)) {
+            return response()->json([
+                'message' => 'Post unliked successfully',
+                'likes' => $post->likes,
+            ], 200);
+        }
 
         return response()->json([
-            'message' => 'Post liked successfully',
-            'likes' => $post->likes,
-        ]);
+            'message' => 'You have not liked this post yet',
+        ], 400);
     }
+
+    public function toggle_post_pin(int $post_id)
+    {
+        try {
+            $post = Post::getRecord($post_id);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
+
+        // Przełącz stan przypięcia
+        if ($post->isPinned()) {
+            $post->unpin();
+            return response()->json([
+                'message' => 'Post unpinned successfully',
+            ], 200);
+        } else {
+            $post->pin();
+            return response()->json([
+                'message' => 'Post pinned successfully',
+            ], 200);
+        }
+    }
+
+    public function get_friends_posts()
+    {
+        $user = auth()->user();
+
+        $friend_ids = $user->acceptedFriends()->pluck('id');
+
+        // Pobierz posty zaakceptowanych znajomych
+        $posts = Post::whereIn('user_id', $friend_ids)
+            ->orderBy('created_at', 'desc')
+            ->with('user:id,first_name,last_name')
+            ->get();
+
+        if ($posts->isEmpty()) {
+            return response()->json([
+                'message' => 'No posts found from your accepted friends',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Posts retrieved successfully',
+            'posts' => $posts,
+        ], 200);
+    }
+
 }

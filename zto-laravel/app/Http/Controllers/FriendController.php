@@ -112,9 +112,9 @@ class FriendController extends Controller
 
     public function get_friends()
     {
-        $userId = auth()->id();
+        $user_id = auth()->id();
 
-        $friends = Friend::where('friend_id', $userId)
+        $friends = Friend::where('user_id', $user_id)
             ->where('status', 'accepted')
             ->with('friend')
             ->orderBy('created_at', 'desc')
@@ -124,6 +124,22 @@ class FriendController extends Controller
             'message' => 'OK',
             'friends' => $friends,
         ]);
+    }
+
+    public function search_users(Request $request)
+    {
+        $search = $request->query('search');
+
+        $users = User::where('first_name', 'LIKE', "%$search%")
+            ->orWhere('last_name', 'LIKE', "%$search%")
+            ->orderBy('first_name')
+            ->get(['id', 'first_name', 'last_name']);
+
+        if ($users->isEmpty()) {
+            return response()->json(['message' => 'No users found'], 404);
+        }
+
+        return response()->json(['users' => $users], 200);
     }
 }
 

@@ -56,12 +56,23 @@ class User extends Authenticatable
 
     public function friends()
     {
-        return $this->hasMany(Friend::class, 'user_id');
+        return $this->hasMany(Friend::class, 'user_id')
+            ->where('status', 'accepted'); // Znajomi, gdzie user_id
     }
-
+    
     public function friendOf()
     {
-        return $this->hasMany(Friend::class, 'friend_id');
+        return $this->hasMany(Friend::class, 'friend_id')
+            ->where('status', 'accepted'); // Znajomi, gdzie friend_id
+    }
+    
+    public function acceptedFriends()
+    {
+        $friendIds = $this->friends()->pluck('friend_id'); // Znajomi, gdzie user_id = auth()->id()
+        $friendOfIds = $this->friendOf()->pluck('user_id'); // Znajomi, gdzie friend_id = auth()->id()
+
+        // Połącz listy ID i zwróć użytkowników
+        return User::whereIn('id', $friendIds->merge($friendOfIds))->get();
     }
 
     public function sentMessages()
