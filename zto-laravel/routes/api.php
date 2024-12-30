@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Komentarze
     Route::post('/posts/add_comment', [CommentController::class, 'add_comment']);
     Route::delete('/posts/delete_comment/{comment_id}', [CommentController::class, 'delete_comment']);
+    Route::patch('/posts/edit_comment', [CommentController::class, 'edit_comment']);
 
     // Użytkownicy
     Route::get('/auth/signout', [AuthController::class, 'signout']);

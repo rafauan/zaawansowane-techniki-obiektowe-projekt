@@ -55,4 +55,34 @@ class CommentController extends Controller
             return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 400);
         }
     }
+
+    public function edit_comment(Request $request)
+    {
+        try {
+            $request->validate([
+                'content' => 'required|string',
+                'comment_id' => 'required|integer',
+            ]);
+
+            $comment_id = $request->comment_id;
+            $comment = Comment::getRecord($comment_id);
+
+            if ($comment->user_id !== auth()->id()) {
+                return response()->json(['message' => 'Unauthorized to edit this comment'], 403);
+            }
+
+            $updatedComment = Comment::updateRecord($comment_id, ['content' => $request->content]);
+
+            return response()->json([
+                'message' => 'Comment updated successfully',
+                'comment' => $updatedComment,
+            ], 200);
+        } catch (\Exception $e) {
+            if ($e->getMessage() === 'Record not found') {
+                return response()->json(['message' => 'Comment not found'], 404);
+            }
+
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 400);
+        }
+    }
 }
