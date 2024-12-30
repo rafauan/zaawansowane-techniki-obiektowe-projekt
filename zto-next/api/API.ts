@@ -31,13 +31,10 @@ const oFetch = async <ResponseT>(
   hideToast: boolean = false
 ) => {
   try {
-    const res = await _ofetch<ResponseT, "json">(url, {
+    return await _ofetch<ResponseT, "json">(url, {
       ...options,
       parseResponse: JSON.parse,
     });
-    //TODO: delete on prod
-    console.log({ url, res });
-    return res;
   } catch (error: any) {
     console.error(error);
     if (!hideToast) toast.error(`Error: ${error.data.message}`);
