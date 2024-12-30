@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FriendController;
+use App\Http\Controllers\CommentController;
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -18,6 +19,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts/{post_id}/unlike', [PostController::class, 'unlike_post']);
     Route::post('/posts/{post_id}/toggle_pin', [PostController::class, 'toggle_post_pin']);
     Route::get('/posts/get_friends_posts', [PostController::class, 'get_friends_posts']);
+
+    // Komentarze
+    Route::post('/posts/add_comment', [CommentController::class, 'add_comment']);
+    Route::delete('/posts/delete_comment/{comment_id}', [CommentController::class, 'delete_comment']);
 
     // Użytkownicy
     Route::get('/auth/signout', [AuthController::class, 'signout']);

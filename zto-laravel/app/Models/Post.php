@@ -12,7 +12,7 @@ class Post extends BaseModel implements LikeableInterface, PinnableInterface
     use HasFactory;
 
     // Wypełnialne pola (mass assignment)
-    protected $fillable = ['title', 'content', 'user_id', 'likes', 'is_pinned'];
+    protected $fillable = ['title', 'content', 'user_id', 'likes', 'is_pinned', 'image_path'];
 
     // Domyślne wartości dla nowych pól
     protected $attributes = [
@@ -26,6 +26,11 @@ class Post extends BaseModel implements LikeableInterface, PinnableInterface
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 
     /**

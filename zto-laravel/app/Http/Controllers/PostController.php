@@ -10,19 +10,27 @@ class PostController extends Controller
 {
     public function get_my_posts()
     {
-        $posts = Post::where('user_id', auth()->user()->id)->orderBy('created_at', 'desc')->get();
-        
+        $posts = Post::where('user_id', auth()->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->with([
+                'comments' => function ($query) {
+                    $query->with('user:id,first_name,last_name') // Pobiera dane autora komentarza
+                          ->orderBy('created_at', 'asc'); // Sortowanie komentarzy
+                }
+            ])
+            ->get();
+    
         if ($posts->isEmpty()) {
             return response()->json([
                 'message' => 'No posts found',
             ], 404);
         }
-
+    
         return response()->json([
             'message' => 'OK',
             'posts' => $posts,
         ]);
-	}
+    }
 
     public function create_post(Request $request)
     {
@@ -30,25 +38,40 @@ class PostController extends Controller
             $validator = Validator::make($request->all(), [
                 'content' => 'required|string|max:1000',
                 'title' => 'required|string|max:255',
+                'image' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['message' => $validator->errors()->first()], 400);
             }
 
-            $post = Post::create([
-                'user_id' => auth()->id(),
-                'content' => $request->content,
-                'title' => $request->title,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
-        }
+            $image_path = null;
 
-        return response()->json([
-            'message' => 'Post created successfully',
-            'post' => $post,
-        ], 201);
+            if ($request->hasFile('image')) {
+                try {
+                    $image_path = $request->file('image')->store('images/posts', 'public');
+                } catch (\Exception $e) {
+                    return response()->json(['message' => 'Error saving image: ' . $e->getMessage()], 500);
+                }
+            }
+
+            $post = Post::create([
+                'title' => $request->title,
+                'content' => $request->content,
+                'user_id' => auth()->id(),
+                'image_path' => $image_path,
+            ]);
+    
+            // Dodanie pełnego URL obrazu do odpowiedzi
+            $post->image_url = $image_path ? asset('storage/' . $image_path) : null;
+    
+            return response()->json([
+                'message' => 'Post created successfully',
+                'post' => $post,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
+        }
     }
 
     public function get_record($post_id)
@@ -176,6 +199,12 @@ class PostController extends Controller
         $posts = Post::whereIn('user_id', $friend_ids)
             ->orderBy('created_at', 'desc')
             ->with('user:id,first_name,last_name')
+            ->with([
+                'comments' => function ($query) {
+                    $query->with('user:id,first_name,last_name')
+                          ->orderBy('created_at', 'asc');
+                }
+            ])
             ->get();
 
         if ($posts->isEmpty()) {
