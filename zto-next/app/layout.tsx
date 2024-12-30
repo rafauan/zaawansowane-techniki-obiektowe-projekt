@@ -1,6 +1,8 @@
-import type { Metadata } from 'next';
-import './globals.css';
-import LogoutButton from '@/lib/logout';
+import Link from "next/link";
+import type { Metadata } from "next";
+import "./globals.css";
+import LogoutButton from "@/lib/logout";
+import { ToastContainer } from "react-toastify";
 
 export const metadata: Metadata = {
 	title: 'Create Next App',
@@ -21,7 +23,10 @@ export default function RootLayout({
 					</h1>
 					<LogoutButton></LogoutButton>
 				</header>
-				<main className='px-8'>{children}</main>
+        <main className="px-8">
+          <ToastContainer position="bottom-center" />
+          {children}
+        </main>
 			</body>
 		</html>
 	);
