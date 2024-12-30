@@ -1,28 +1,19 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react";
-import { userAuthenticated } from "./auth";
 import { useRouter } from "next/navigation";
+import { useIsAuthenticated } from "@/hooks/useIsAuhtenticated";
+import { useAppStore } from "@/store/store";
 
-export default function LogoutButton(){
-        const[canView, setCanView] = useState(false);
-        const router = useRouter();
+export default function LogoutButton() {
+  const isAuthenticated = useIsAuthenticated();
+  const flushUser = useAppStore((state) => state.flushUser);
+  const router = useRouter();
 
-        useEffect(() => {
-            const authenticated = userAuthenticated()
+  const signout = () => {
+    flushUser();
+    router.push("/login");
+    window.location.reload();
+  };
 
-            setCanView(authenticated);
-        })
-
-        const signout = () => {
-            localStorage.removeItem("token");
-            router.push("/login")
-            window.location.reload();
-        }
-
-        return (
-            canView ? (
-                <button onClick={signout}>Logout</button>
-            ): null
-        )
+  return isAuthenticated ? <button onClick={signout}>Logout</button> : null;
 }
