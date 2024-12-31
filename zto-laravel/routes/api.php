@@ -7,8 +7,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\CommentController;
+use App\Http\Middleware\JwtMiddleware;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(JwtMiddleware::class)->group(function () {
 
     // Posty
     Route::get('/posts/get_my_posts', [PostController::class, 'get_my_posts']);
