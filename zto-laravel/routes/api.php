@@ -36,6 +36,7 @@ Route::middleware(JwtMiddleware::class)->group(function () {
         return $request->user();
     });
     Route::get('/friends/search', [FriendController::class, 'search_users']);
+    Route::post('/auth/upload_profile_picture', [AuthController::class, 'upload_profile_picture']);
 
     // Wiadomości
     Route::post('/messages', [MessageController::class, 'sendMessage']);

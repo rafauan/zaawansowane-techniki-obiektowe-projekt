@@ -49,6 +49,8 @@ class User extends Authenticatable
         ];
     }
 
+    protected $appends = ['profile_picture_url'];
+
     public function posts()
     {
         return $this->hasMany(Post::class);
@@ -85,4 +87,18 @@ class User extends Authenticatable
         return $this->hasMany(Message::class, 'receiver_id');
     }
 
+    public function profilePost()
+    {
+        return $this->belongsTo(Post::class, 'profile_post_id');
+    }
+
+    public function getProfilePictureUrlAttribute()
+    {
+        $imagePath = \DB::table('posts')
+            ->where('id', $this->profile_post_id)
+            ->value('image_path');
+
+        return $imagePath ? asset('storage/' . $imagePath) : null;
+    }
+    
 }

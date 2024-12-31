@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Auth;
+use App\Models\Post;
 
 class AuthController extends Controller
 {
@@ -215,5 +216,47 @@ class AuthController extends Controller
     //         'message' => 'Logged out successfully',
     //     ], 200);
     // }
+
+    public function upload_profile_picture(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|max:1000',
+            'image' => 'required|file|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => $validator->errors()->first()], 400);
+        }
+
+        $user = auth()->user();
+
+        // Zapis obrazu w katalogu
+        try {
+            $image_path = $request->file('image')->store('images/profile_pictures', 'public');
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error saving image: ' . $e->getMessage()], 500);
+        }
+
+        // Tworzenie posta dla zdjęcia profilowego
+        $post = Post::create([
+            'title' => $request->title,
+            'content' => $request->content,
+            'user_id' => $user->id,
+            'image_path' => $image_path,
+        ]);
+
+        // Aktualizacja użytkownika
+        $user->profile_post_id = $post->id;
+        $user->save();
+
+        $post->image_url = $image_path ? asset('storage/' . $image_path) : null;
+
+        return response()->json([
+            'message' => 'Profile picture updated successfully',
+            'post' => $post,
+        ], 201);
+    }
+
 }
 
