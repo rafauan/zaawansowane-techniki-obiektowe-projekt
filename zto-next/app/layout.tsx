@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import LogoutButton from "@/lib/logout";
 import { ToastContainer } from "react-toastify";
 import UserAccountActionsButton from "@/components/UserAccountActionsButton";
 
@@ -21,7 +20,6 @@ export default function RootLayout({
           <h1 className="text-3xl font-bold text-white">Facebook</h1>
           <div>
             <UserAccountActionsButton />
-            <LogoutButton />
           </div>
         </header>
         <main className="px-8">

@@ -5,6 +5,8 @@ export interface IUser {
   email_verified_at: string | null;
   first_name: string;
   last_name: string;
+  profile_picture_url: string | null;
+  profile_picture_post_id: number | null;
   role: string;
   updated_at: string;
 }
