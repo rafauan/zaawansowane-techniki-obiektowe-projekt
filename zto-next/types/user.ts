@@ -11,10 +11,12 @@ export interface IUser {
 
 export interface SignUpResponse {
   message: string;
+  token: string;
   user: IUser;
 }
 
 export interface SignInResponse {
+  message: string;
   token: string;
   user: {
     email: string;

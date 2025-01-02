@@ -1,178 +1,162 @@
-'use client';
+"use client";
 
+import { API } from "@/api/API";
 import { AllowOnlyNotAuthenticated } from "@/lib/auth";
+import { useAppStore } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { FormEventHandler, useState } from "react";
 
- function RegisterComponent(){
+function RegisterComponent() {
+  const router = useRouter();
+  const setToken = useAppStore((state) => state.setToken);
 
-    const router = useRouter()
+  const [formData, setFormData] = useState<RegisterData>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
 
-    const [formData, setFormData] = useState<RegisterData>({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: ""
-      });
+  const [formErrors, setFormErrors] = useState<RegisterError>({
+    firstNameError: "",
+    lastNameError: "",
+    emailError: "",
+    passwordError: "",
+    errorMessage: "",
+  });
 
-      const [formErrors, setFormErrors] = useState<RegisterError>({
-        firstNameError: "",
-        lastNameError: "",
-        emailError: "",
-        passwordError: "",
-        errorMessage: ""
-      });
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fieldName = e.target.name;
+    const fieldValue = e.target.value;
 
-      const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const fieldName = e.target.name;
-        const fieldValue = e.target.value;
-    
-        setFormData((prevState) => ({
-          ...prevState,
-          [fieldName]: fieldValue
-        }));
-      };
+    setFormData((prevState) => ({
+      ...prevState,
+      [fieldName]: fieldValue,
+    }));
+  };
 
-      const headers = {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-    };
+  const submitForm: FormEventHandler<HTMLFormElement> = async (e) => {
+    e.preventDefault();
 
-      const submitForm: FormEventHandler<HTMLFormElement> = async (e) =>{
-        e.preventDefault()
-        const result = await fetch('http://localhost:8000/api/auth/signup',{
-            method: 'POST',
-            body: JSON.stringify(formData),
-            headers: headers
-        })
-        .then(async response => await response.json())
-        .then(json => {
-            if (json.token){
-                localStorage.setItem("token",json.token);
-                router.push("/posts")
-            }
-            else if (json.errors){
-                let firstNameError = "";
-                let lastNameError = "";
-                let emailError = "";
-                let passwordError = "";
-                let errorMessage = "";
-                if(json.errors.email && json.errors.email.length > 0){
-                    emailError = json.errors.email[0];
-                }
-                if(json.errors.firstName && json.errors.firstName.length > 0){
-                    firstNameError = json.errors.firstName[0];
-                }
-                if(json.errors.lastName && json.errors.lastName.length > 0){
-                    lastNameError = json.errors.lastName[0];
-                }
-                if(json.errors.password && json.errors.password.length > 0){
-                    passwordError = json.errors.password[0];
-                }
-                if(json.message){
-                    errorMessage = json.message[0];
-                }
-                setFormErrors({
-                    firstNameError: firstNameError,
-                    lastNameError: lastNameError,
-                    emailError: emailError,
-                    passwordError: passwordError,
-                    errorMessage: errorMessage
-                })
-            }
-        })
+    try {
+      const res = await API.POST.signUp(formData);
+      if (res && res.token) {
+        setToken(res.token);
+        router.push("/posts");
+        window.location.reload();
+        return;
+      }
+    } catch (err: any) {
+      if (err.errors) {
+        let firstNameError = "";
+        let lastNameError = "";
+        let emailError = "";
+        let passwordError = "";
+        let errorMessage = "";
+        if (err.errors.email && err.errors.email.length > 0) {
+          emailError = err.errors.email[0];
+        }
+        if (err.errors.firstName && err.errors.firstName.length > 0) {
+          firstNameError = err.errors.firstName[0];
+        }
+        if (err.errors.lastName && err.errors.lastName.length > 0) {
+          lastNameError = err.errors.lastName[0];
+        }
+        if (err.errors.password && err.errors.password.length > 0) {
+          passwordError = err.errors.password[0];
+        }
+        if (err.message) {
+          errorMessage = err.message[0];
+        }
+        setFormErrors({
+          firstNameError: firstNameError,
+          lastNameError: lastNameError,
+          emailError: emailError,
+          passwordError: passwordError,
+          errorMessage: errorMessage,
+        });
+      }
     }
+  };
 
-
-    return (
+  return (
+    <div>
+      <form action="#" onSubmit={submitForm}>
         <div>
-             <form action="#" onSubmit={submitForm}>
-                <div>
-                    <label>FirstName</label>
-                    <input type="text" name="firstName" onChange={handleInput} value={formData.firstName} />
-                    {
-                        formErrors.firstNameError ? (
-                            <p>
-                                {
-                                    formErrors.firstNameError
-                                }
-                            </p>
-                        ) : null
-                    }
-                </div>
-                <div>
-                    <label>LastName</label>
-                    <input type="text" name="lastName" onChange={handleInput} value={formData.lastName} />
-                    {
-                        formErrors.lastNameError ? (
-                            <p>
-                                {
-                                    formErrors.lastNameError
-                                }
-                            </p>
-                        ) : null
-                    }
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input type="text" name="email" onChange={handleInput} value={formData.email} />
-                    {
-                        formErrors.emailError ? (
-                            <p>
-                                {
-                                    formErrors.emailError
-                                }
-                            </p>
-                        ) : null
-                    }
-                </div>
-                <div>
-                    <label>Password</label>
-                    <input type="password" name="password" onChange={handleInput} value={formData.password} />
-                    {
-                        formErrors.passwordError ? (
-                            <p>
-                                {
-                                    formErrors.passwordError
-                                }
-                            </p>
-                        ) : null
-                    }
-                </div>
-                <button type="submit">Register</button>
-            </form>
+          <label>FirstName</label>
+          <input
+            type="text"
+            name="firstName"
+            onChange={handleInput}
+            value={formData.firstName}
+          />
+          {formErrors.firstNameError ? (
+            <p>{formErrors.firstNameError}</p>
+          ) : null}
         </div>
-    )
+        <div>
+          <label>LastName</label>
+          <input
+            type="text"
+            name="lastName"
+            onChange={handleInput}
+            value={formData.lastName}
+          />
+          {formErrors.lastNameError ? <p>{formErrors.lastNameError}</p> : null}
+        </div>
+        <div>
+          <label>Email</label>
+          <input
+            type="text"
+            name="email"
+            onChange={handleInput}
+            value={formData.email}
+          />
+          {formErrors.emailError ? <p>{formErrors.emailError}</p> : null}
+        </div>
+        <div>
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            onChange={handleInput}
+            value={formData.password}
+          />
+          {formErrors.passwordError ? <p>{formErrors.passwordError}</p> : null}
+        </div>
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  );
 }
 
-export default function Register(){
-    const GuardedComponent = AllowOnlyNotAuthenticated(RegisterComponent)
+export default function Register() {
+  const GuardedComponent = AllowOnlyNotAuthenticated(RegisterComponent);
 
-    return <GuardedComponent></GuardedComponent>
-
-} 
+  return <GuardedComponent></GuardedComponent>;
+}
 
 interface RegisterData {
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
 }
 
 interface RegisterResponse {
-    message: string,
-    token: string,
-    user: {
-        firstName: string,
-        lastName: string,
-        email: string,
-    }
+  message: string;
+  token: string;
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 }
 
 interface RegisterError {
-    firstNameError: string,
-    lastNameError: string,
-    emailError: string,
-    passwordError: string,
-    errorMessage: string
+  firstNameError: string;
+  lastNameError: string;
+  emailError: string;
+  passwordError: string;
+  errorMessage: string;
 }
