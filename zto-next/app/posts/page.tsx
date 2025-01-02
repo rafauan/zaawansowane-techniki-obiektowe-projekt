@@ -1,6 +1,6 @@
 "use client";
 
-import { getPosts } from "@/data/posts";
+import { API } from "@/api/API";
 import { IPost } from "@/types/posts";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -13,11 +13,28 @@ export default function Page() {
   const [likedPosts, setLikedPosts] = useState(posts.map(() => false));
 
   useEffect(() => {
-    getPosts().then((data) => {
-      if (data) setPosts(data);
-      setLoading(false);
-    });
+    getData();
   }, []);
+
+  const getData = async () => {
+    try {
+      let allPosts: IPost[] = [];
+
+      const myPostsResponse = await API.GET.myPosts();
+      allPosts = myPostsResponse.posts;
+
+      const getFriendsResponse = await API.GET.friends();
+      if (getFriendsResponse.friends.length) {
+        const friendsPostsResponse = await API.GET.friendsPosts();
+        allPosts = allPosts.concat(friendsPostsResponse.posts);
+      }
+
+      setPosts(allPosts);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleLike = (index: number) => {
     if (!likedPosts[index]) {
@@ -110,13 +127,9 @@ export default function Page() {
                   Lubię to!
                 </button>
               </div>
-              <a
-                href={`http://localhost:3000/posts/${post.id}/edit`}
-                className="cursor-pointer hover:text-gray-700"
-                title="Edytuj post"
-              >
+              <Link href={`/posts/${post.id}/edit`} className="text-blue-600">
                 Edytuj post ✏️
-              </a>
+              </Link>
             </div>
           </div>
         ))}
