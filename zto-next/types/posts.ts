@@ -1,43 +1,52 @@
 export interface IPost {
-  id: number;
-  likes: number;
-  is_pinned: boolean;
-  user_id: number;
-  content: string;
-  title: string;
-  updated_at: string;
-  created_at: string;
+	id: number;
+	likes: number;
+	is_pinned: boolean;
+	user_id: number;
+	content: string;
+	title: string;
+	updated_at: string;
+	created_at: string;
 }
 
 export interface CreatePostResponse {
-  message: string;
-  post: IPost;
+	message: string;
+	post: IPost;
 }
 
 export interface UpdatePostResponse {
-  id: number;
-  title: string;
-  content: string;
-  updatedAt: string;
+	id: number;
+	title: string;
+	content: string;
+	updatedAt: string;
 }
 
 export interface GetPostsResponse {
-  message: string;
-  posts: IPost[];
+	message: string;
+	posts: IPost[];
 }
 
 export interface DeletePostResponse {
-  message: string;
+	message: string;
+}
+
+export interface LikePostResponse {
+	message: string;
+	like: number;
+}
+
+export interface TogglePostResponse {
+	message: string;
 }
 
 //Payloads
 export type CreatePostPayload = {
-  title: string;
-  content: string;
+	title: string;
+	content: string;
 };
 
 export type UpdatePostPayload = {
-  title: string;
-  content: string;
-  postId: number;
+	title: string;
+	content: string;
+	postId: number;
 };
