@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import UserAccountActionsButton from "@/components/UserAccountActionsButton";
+// import { config as fontAwesomeConfig } from "@fortawesome/fontawesome-svg-core";
+// import "@fortawesome/fontawesome-svg-core/styles.css";
+import PendingFriendRequestsButton from "@/components/PendingRequestsButton";
+// fontAwesomeConfig.autoAddCss = false;
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,7 +22,8 @@ export default function RootLayout({
       <body>
         <header className="bg-blue-700 mb-6 flex justify-between items-center py-10 px-8">
           <h1 className="text-3xl font-bold text-white">Facebook</h1>
-          <div>
+          <div className="flex flex-row gap-4">
+            <PendingFriendRequestsButton />
             <UserAccountActionsButton />
           </div>
         </header>

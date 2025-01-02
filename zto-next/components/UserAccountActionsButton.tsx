@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAppStore } from "@/store/store";
 import { DEFAULT_PROFILE_PICTURE_URL } from "@/utils/constants";
 import { API } from "@/api/API";
+import DropdownWrapper from "./DropdownWrapper";
 
 type Props = {};
 
@@ -56,61 +57,61 @@ const UserAccountActionsButton = (props: Props) => {
     return null;
   }
 
+  type accountActionItem = {
+    title: string;
+    onClick?: () => void;
+    image?: string;
+  };
+
+  const dropdownItems: accountActionItem[] = [
+    {
+      title: `${user.first_name} ${user.last_name}`,
+      image: user.profile_picture_url || DEFAULT_PROFILE_PICTURE_URL,
+    },
+    {
+      title: "Logout",
+      onClick: handleLogout,
+    },
+  ];
+
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsDropdownOpen((prev) => !prev)}
-        className="relative w-10 h-10 rounded-full overflow-hidden border border-gray-300 shadow-sm hover:shadow-md focus:outline-none"
-        title="Konto"
-        data-tooltip-target="tooltip-default"
-      >
-        <img
-          src={user.profile_picture_url || DEFAULT_PROFILE_PICTURE_URL}
-          alt={`${user.first_name} ${user.last_name}`}
-          className="object-cover w-full h-full"
-        />
-      </button>
-
-      <div
-        id="tooltip-default"
-        role="tooltip"
-        className="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-      >
-        Konto
-        <div className="tooltip-arrow" data-popper-arrow></div>
-      </div>
-
-      {/* Dropdown */}
-      {isDropdownOpen && (
-        <div className="absolute top-14 right-0 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden">
+    <DropdownWrapper
+      items={dropdownItems}
+      tooltipMessage="Konto"
+      renderItem={({ title, image, onClick }: accountActionItem) => {
+        return image ? (
           <Link
             href="/user"
             onClick={() => setIsDropdownOpen(false)}
             className="flex items-center gap-2 p-3 hover:bg-gray-100 cursor-pointer"
           >
             <img
-              src={user.profile_picture_url || DEFAULT_PROFILE_PICTURE_URL}
+              src={image}
               alt="Profile Pic"
               className="w-10 h-10 rounded-full object-cover"
             />
             <div>
               <p className="text-sm font-medium text-gray-800 hover:underline">
-                {user.first_name} {user.last_name}
+                {title}
               </p>
             </div>
           </Link>
-
-          <div className="border-t border-gray-200 "></div>
-
+        ) : (
           <button
-            onClick={handleLogout}
+            onClick={onClick}
             className="px-3 py-3 text-sm text-gray-800 font-medium hover:bg-gray-100 w-full text-left cursor-pointer"
           >
-            Logout
+            {title}
           </button>
-        </div>
-      )}
-    </div>
+        );
+      }}
+    >
+      <img
+        src={user.profile_picture_url || DEFAULT_PROFILE_PICTURE_URL}
+        alt={`${user.first_name} ${user.last_name}`}
+        className="object-cover w-full h-full rounded-full"
+      />
+    </DropdownWrapper>
   );
 };
 
