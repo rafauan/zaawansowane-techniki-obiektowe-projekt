@@ -10,6 +10,7 @@ import { DEFAULT_PROFILE_PICTURE_URL } from "@/utils/constants";
 import usePolling from "@/hooks/usePolling";
 import DropdownWrapper from "./DropdownWrapper";
 import Link from "next/link";
+import { IFriendRequest } from "@/types/friends";
 
 const PendingFriendRequestsButton = () => {
   const isAuthenticated = useIsAuthenticated();
@@ -32,6 +33,22 @@ const PendingFriendRequestsButton = () => {
     }
   };
 
+  const manageFriendRequest = async (
+    request: IFriendRequest,
+    answer: boolean
+  ) => {
+    try {
+      await API.PATCH.friendRequest({
+        id: request.id,
+        user_id: request.user.id,
+        answer,
+      });
+      getData();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const [startPollingFriendsRequests, cancelPollingFriendsRequests] =
     usePolling(getData, 2000);
 
@@ -48,6 +65,7 @@ const PendingFriendRequestsButton = () => {
     <DropdownWrapper
       items={pendingFriendRequests}
       tooltipMessage="Zaproszenia do grona znajomych"
+      emptyMessage="Brak zaproszeń do grona znajomych"
       renderItem={(request) => (
         <div
           key={request.user.id}
@@ -68,10 +86,16 @@ const PendingFriendRequestsButton = () => {
               {request.user.first_name} {request.user.last_name}
             </Link>
             <div className="flex gap-2 mt-1">
-              <button className="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600">
+              <button
+                className="px-3 py-1 text-xs text-white bg-green-500 rounded hover:bg-green-600"
+                onClick={() => manageFriendRequest(request, true)}
+              >
                 Akceptuj
               </button>
-              <button className="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600">
+              <button
+                className="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
+                onClick={() => manageFriendRequest(request, false)}
+              >
                 Odrzuć
               </button>
             </div>
