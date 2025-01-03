@@ -6,6 +6,7 @@ import UserAccountActionsButton from '@/components/UserAccountActionsButton';
 // import "@fortawesome/fontawesome-svg-core/styles.css";
 import PendingFriendRequestsButton from '@/components/PendingRequestsButton';
 import Link from 'next/link';
+import PostsButtonComponent from '@/components/PostsButton';
 // fontAwesomeConfig.autoAddCss = false;
 
 export const metadata: Metadata = {
@@ -26,11 +27,7 @@ export default function RootLayout({
 						<h1 className='text-3xl font-bold text-white'>Facebook</h1>
 					</Link>
 					<div className='flex flex-row gap-4'>
-						<Link href={'/posts'}>
-							<button className='h-10 px-3 bg-gray-100 text-gray-700 font-semibold rounded'>
-								Posts
-							</button>
-						</Link>
+						<PostsButtonComponent />
 						<PendingFriendRequestsButton />
 						<UserAccountActionsButton />
 					</div>
