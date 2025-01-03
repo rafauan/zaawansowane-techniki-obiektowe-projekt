@@ -17,19 +17,24 @@ export default function Page() {
 	}, []);
 
 	const getData = async () => {
-		let allPosts: IPost[] = [];
+		try {
+			let allPosts: IPost[] = [];
 
-		const myPostsResponse = await API.GET.myPosts();
-		allPosts = myPostsResponse.posts;
+			const myPostsResponse = await API.GET.myPosts();
+			allPosts = myPostsResponse.posts;
 
-		const getFriendsResponse = await API.GET.friends();
-		if (getFriendsResponse.friends.length) {
-			const friendsPostsResponse = await API.GET.friendsPosts();
-			allPosts = allPosts.concat(friendsPostsResponse.posts);
+			const getFriendsResponse = await API.GET.friends();
+			if (getFriendsResponse.friends.length) {
+				const friendsPostsResponse = await API.GET.friendsPosts();
+				allPosts = allPosts.concat(friendsPostsResponse.posts);
+			}
+
+			setPosts(allPosts);
+			setLoading(false);
+		} catch {
+			setPosts([]);
+			setLoading(false);
 		}
-
-		setPosts(allPosts);
-		setLoading(false);
 	};
 
 	const handleLike = async (postId: number) => {
@@ -59,9 +64,14 @@ export default function Page() {
 		(a, b) => (b.is_pinned ? 1 : 0) - (a.is_pinned ? 1 : 0)
 	);
 
+	const handleDeletePost = async (postId: number) => {
+		const res = await API.DELETE.post(postId);
+		if (res) getData();
+	};
+
 	if (loading)
 		return (
-			<div className='h-full w-2/3 mx-auto mt-20'>
+			<div className='h-full w-2/3 ml-[50%] mt-20 '>
 				<LoadSpinner />
 			</div>
 		);
@@ -73,7 +83,7 @@ export default function Page() {
 				</button>
 			</Link>
 			<div className='flex flex-col items-center space-y-4'>
-				{sortedPosts.map((post, index) => (
+				{sortedPosts.map((post) => (
 					<div
 						key={post.id}
 						className='relative w-full max-w-md bg-white border border-gray-300 rounded-lg shadow-sm p-4'
@@ -141,6 +151,7 @@ export default function Page() {
 							<p>|</p>
 							<button
 								className={`px-2 py-1 rounded text-xs bg-red-800 text-white `}
+								onClick={() => handleDeletePost(post.id)}
 							>
 								Usuń
 							</button>

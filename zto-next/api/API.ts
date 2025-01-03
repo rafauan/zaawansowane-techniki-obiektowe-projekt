@@ -15,6 +15,7 @@ import {
 	GetPostsResponse,
 	DeletePostResponse,
 	LikePostResponse,
+	TogglePostResponse,
 } from '@/types/posts';
 import {
 	GetFriendsResponse,
@@ -145,8 +146,7 @@ const POST = {
 		});
 	},
 	togglePostPin(postId: number) {
-		//TODO: type the response
-		return oFetch(`/posts/${postId}/toggle_pin`, {
+		return oFetch<TogglePostResponse>(`/posts/${postId}/toggle_pin`, {
 			method: 'POST',
 			headers: headers(),
 		});
