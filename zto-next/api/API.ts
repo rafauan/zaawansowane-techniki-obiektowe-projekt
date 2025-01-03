@@ -24,6 +24,8 @@ import {
 	ManageFriendRequestResponse,
 } from '@/types/friends';
 
+const emptyResponseMessages = ['No posts found'];
+
 const _ofetch = ofetch.create({ baseURL: 'http://localhost:8000/api' });
 
 // middleware to hanle error toasts globally
@@ -40,8 +42,8 @@ const oFetch = async <ResponseT>(
 		console.log({ url, res });
 		return res;
 	} catch (error: any) {
-		console.error(error);
-		if (!hideToast) toast.error(`Error: ${error.data.message}`);
+		if (!hideToast && !emptyResponseMessages.includes(error.data.message))
+			toast.error(`Error: ${error.data.message}`);
 		//TODO: extend and figure out how to handle error types better
 		throw error as IFetchError<{ message: string }>;
 	}

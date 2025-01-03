@@ -26,6 +26,11 @@ export default function RootLayout({
 						<h1 className='text-3xl font-bold text-white'>Facebook</h1>
 					</Link>
 					<div className='flex flex-row gap-4'>
+						<Link href={'/posts'}>
+							<button className='h-10 px-3 bg-gray-100 text-gray-700 font-semibold rounded'>
+								Posts
+							</button>
+						</Link>
 						<PendingFriendRequestsButton />
 						<UserAccountActionsButton />
 					</div>
