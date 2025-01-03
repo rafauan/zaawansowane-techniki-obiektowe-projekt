@@ -80,52 +80,70 @@ function RegisterComponent() {
   };
 
   return (
-    <div>
-      <form action="#" onSubmit={submitForm}>
-        <div>
-          <label>FirstName</label>
-          <input
-            type="text"
-            name="firstName"
-            onChange={handleInput}
-            value={formData.firstName}
-          />
-          {formErrors.firstNameError ? (
-            <p>{formErrors.firstNameError}</p>
-          ) : null}
-        </div>
-        <div>
-          <label>LastName</label>
-          <input
-            type="text"
-            name="lastName"
-            onChange={handleInput}
-            value={formData.lastName}
-          />
-          {formErrors.lastNameError ? <p>{formErrors.lastNameError}</p> : null}
-        </div>
-        <div>
-          <label>Email</label>
-          <input
-            type="text"
-            name="email"
-            onChange={handleInput}
-            value={formData.email}
-          />
-          {formErrors.emailError ? <p>{formErrors.emailError}</p> : null}
-        </div>
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            onChange={handleInput}
-            value={formData.password}
-          />
-          {formErrors.passwordError ? <p>{formErrors.passwordError}</p> : null}
-        </div>
-        <button type="submit">Register</button>
-      </form>
+    <div className="flex justify-center items-center h-screen">
+      <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6">Rejestracja</h2>
+        <form action="#" onSubmit={submitForm}>
+          <div className="mb-4">
+            <label className="block text-gray-700">Imię</label>
+            <input
+              type="text"
+              name="firstName"
+              onChange={handleInput}
+              value={formData.firstName}
+              className="w-full px-3 py-2 border rounded"
+            />
+            {formErrors.firstNameError ? (
+              <p className="text-red-500 text-sm">{formErrors.firstNameError}</p>
+            ) : null}
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Nazwisko</label>
+            <input
+              type="text"
+              name="lastName"
+              onChange={handleInput}
+              value={formData.lastName}
+              className="w-full px-3 py-2 border rounded"
+            />
+            {formErrors.lastNameError ? (
+              <p className="text-red-500 text-sm">{formErrors.lastNameError}</p>
+            ) : null}
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Email</label>
+            <input
+              type="text"
+              name="email"
+              onChange={handleInput}
+              value={formData.email}
+              className="w-full px-3 py-2 border rounded"
+            />
+            {formErrors.emailError ? (
+              <p className="text-red-500 text-sm">{formErrors.emailError}</p>
+            ) : null}
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Hasło</label>
+            <input
+              type="password"
+              name="password"
+              onChange={handleInput}
+              value={formData.password}
+              className="w-full px-3 py-2 border rounded"
+            />
+            {formErrors.passwordError ? (
+              <p className="text-red-500 text-sm">{formErrors.passwordError}</p>
+            ) : null}
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          >
+            Rejestracja
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
@@ -133,7 +151,7 @@ function RegisterComponent() {
 export default function Register() {
   const GuardedComponent = AllowOnlyNotAuthenticated(RegisterComponent);
 
-  return <GuardedComponent></GuardedComponent>;
+  return <GuardedComponent />;
 }
 
 interface RegisterData {
